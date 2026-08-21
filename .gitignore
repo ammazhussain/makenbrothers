@@ -11,6 +11,10 @@ DEPLOY.md
 # Netlify local state
 .netlify/
 
+# Agent tooling
+.claude/
+skills-lock.json
+
 # OS
 .DS_Store
 Thumbs.db
