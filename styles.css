@@ -107,6 +107,70 @@ address { font-style: normal; }
   will-change: auto;
 }
 
+/* ============ BRAND INTRO ============ */
+/* Driven entirely by CSS animation, so it always clears itself even if
+   JavaScript never runs. Total runtime ~1.35s. */
+.site-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: var(--dark);
+  pointer-events: none;
+  animation: introOut .45s var(--ease) .9s forwards;
+}
+.intro-seen .site-intro { display: none; }
+
+.site-intro-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: introIn .55s var(--ease) both;
+}
+.site-intro-mark { display: block; }
+.site-intro-word {
+  font-family: Archivo, sans-serif;
+  font-weight: 800;
+  font-size: clamp(15px, 2.4vw, 19px);
+  letter-spacing: .24em;
+  color: #fff;
+}
+.site-intro-rule {
+  display: block;
+  width: 78px;
+  height: 2px;
+  background: var(--orange);
+  transform: scaleX(0);
+  animation: introRule .5s var(--ease) .28s forwards;
+}
+.site-intro-tag {
+  font-family: Archivo, sans-serif;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+@keyframes introIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes introRule {
+  to { transform: scaleX(1); }
+}
+@keyframes introOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* A splash screen is motion by definition, so skip it entirely rather than
+   leaving a near-invisible layer sitting over the page. */
+@media (prefers-reduced-motion: reduce) {
+  .site-intro { display: none !important; }
+}
+
 /* ============ NAV ============ */
 .site-header {
   position: sticky;
