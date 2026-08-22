@@ -76,7 +76,8 @@ function wireEmailCopy() {
 
   links.forEach(link => {
     link.addEventListener('click', () => {
-      const address = link.getAttribute('href').replace(/^mailto:/, '');
+      // strip the mailto: scheme and any ?subject= query
+      const address = link.getAttribute('href').replace(/^mailto:/, '').split('?')[0];
       navigator.clipboard.writeText(address)
         .then(() => notify('Copied ' + address))
         // Clipboard can be refused (unfocused document, permission denied).

@@ -29,7 +29,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   color: var(--dark);
   background: #fff;
   -webkit-font-smoothing: antialiased;
@@ -108,26 +108,17 @@ address { font-style: normal; }
 }
 
 /* ============ NAV ============ */
-/* Floating glass island — detached from the top edge */
 .site-header {
   position: sticky;
-  top: 14px;
+  top: 0;
   z-index: 50;
-  margin: 14px auto 0;
-  width: min(calc(100% - 2 * var(--pad)), var(--max-w));
-  border-radius: 999px;
-  background: rgba(255,255,255,.72);
-  backdrop-filter: blur(18px) saturate(1.6);
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset,
-              0 18px 40px -22px rgba(22,21,20,.35),
-              0 0 0 1px rgba(22,21,20,.05);
-  transition: box-shadow .5s var(--ease), background .5s var(--ease);
+  background: #fff;
+  border-bottom: 1px solid var(--border);
 }
-/* Header sits over the hero, so pull the hero up beneath it */
-.hero-section { margin-top: -78px; }
 .nav-inner {
-  padding: 12px 14px 12px 26px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 16px var(--pad);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -205,13 +196,13 @@ address { font-style: normal; }
 .hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Mobile nav — header un-pills while the menu is open */
-.site-header:has(.mobile-nav:not([hidden])) { border-radius: 30px; }
+/* Mobile nav */
 .mobile-nav {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 8px 26px 22px;
+  padding: 8px var(--pad) 22px;
+  border-top: 1px solid var(--border);
 }
 .mobile-nav:not([hidden]) { animation: navReveal .5s var(--ease) both; }
 @keyframes navReveal {
@@ -286,7 +277,7 @@ address { font-style: normal; }
   position: relative;
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 132px var(--pad) 120px;
+  padding: 48px var(--pad) 115px;
   min-height: 88vh;
   display: flex;
   flex-direction: column;
@@ -294,7 +285,7 @@ address { font-style: normal; }
 }
 .hero-trust {
   position: absolute;
-  top: 132px;
+  top: 48px;
   right: var(--pad);
   max-width: 230px;
   text-align: right;
@@ -1152,8 +1143,8 @@ address { font-style: normal; }
   .hero-section { min-height: auto; }
   .hero-content-wrap {
     min-height: auto;
-    padding-top: 124px;
-    padding-bottom: 88px;
+    padding-top: 72px;
+    padding-bottom: 80px;
   }
 }
 
