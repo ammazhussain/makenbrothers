@@ -1,4 +1,3 @@
-# deploy check 4e01db9
 User-agent: *
 Allow: /
 Sitemap: https://makenbrothers.com/sitemap.xml
