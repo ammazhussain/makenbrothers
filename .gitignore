@@ -11,6 +11,10 @@ DEPLOY.md
 # Netlify local state
 .netlify/
 
+# Test tooling
+node_modules/
+test-shots/
+
 # Agent tooling
 .claude/
 skills-lock.json
