@@ -1,0 +1,58 @@
+/* ================================================
+   MAKEN BROTHERS — sewerage-drainage.css
+   Page-specific: the trench-opening loader.
+   Shared page chrome lives in service-page.css
+   ================================================ */
+
+.sd-loader { background: #241f1a; }
+
+.sd-ground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Each stratum is a full-width band split into two halves that
+   part down the centre line, like a trench being cut open. */
+.sd-stratum {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+}
+.sd-half {
+  width: 50%;
+  height: 100%;
+  will-change: transform;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.045),
+              inset 0 -1px 0 rgba(0,0,0,.28);
+}
+/* Cut faces catch the light along the trench line */
+.sd-half-l { border-right: 2px solid rgba(0,0,0,.35); }
+.sd-half-r { border-left: 2px solid rgba(255,255,255,.05); }
+
+/* Grit specks scattered through the soil so the bands are not flat colour */
+.sd-grit {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(0,0,0,.3);
+  pointer-events: none;
+}
+
+/* Soil is lighter than the brick wall, so the brand scrim needs to be
+   wider and softer or it reads as a dark blob. */
+.sd-loader .cc-loader-caption::before {
+  width: 820px;
+  height: 600px;
+  background: radial-gradient(closest-side,
+    rgba(28,22,16,.86),
+    rgba(28,22,16,.62) 38%,
+    rgba(28,22,16,.3) 66%,
+    rgba(28,22,16,0));
+}
+
+/* Slightly deeper canvas backdrop — this scene looks into a hole,
+   so it reads better against a cooler, earthier ground tone. */
+.sd-canvas-wrap {
+  background: linear-gradient(180deg, #e6e2da 0%, #cfc8bd 100%);
+}

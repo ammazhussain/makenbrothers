@@ -1,0 +1,384 @@
+/* ================================================
+   MAKEN BROTHERS — civil-construction.css
+   Standalone service page: brick-wall loader + 3D road build
+   Inherits tokens, fonts and button styles from styles.css
+   ================================================ */
+
+.cc-body { background: var(--off-white); }
+
+/* Shell is hidden behind the loader until the wall breaks */
+.cc-shell {
+  opacity: 0;
+  transition: opacity .5s var(--ease);
+}
+.cc-shell.is-revealed { opacity: 1; }
+
+/* ============ BRICK WALL LOADER ============ */
+.cc-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--dark);
+  overflow: hidden;
+}
+.cc-loader.is-gone {
+  pointer-events: none;
+  visibility: hidden;
+}
+.cc-wall {
+  position: absolute;
+  inset: -2px;
+  display: block;
+}
+.cc-brick {
+  position: absolute;
+  border-radius: 2px;
+  background: #2a2724;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05),
+              inset 0 -2px 0 rgba(0,0,0,.25);
+  will-change: transform, opacity;
+}
+.cc-brick.is-accent { background: var(--orange-dark); }
+.cc-brick.is-light  { background: #3a3733; }
+
+.cc-loader-caption {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  z-index: 2;
+  text-align: center;
+}
+/* Sink the wall behind the mark so the brand stays legible */
+.cc-loader-caption::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 460px;
+  height: 460px;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(22,21,20,.92), rgba(22,21,20,.75) 45%, rgba(22,21,20,0));
+}
+.cc-loader-mark { display: block; }
+.cc-loader-wordmark {
+  font-family: Archivo, sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: .22em;
+  color: #fff;
+}
+.cc-loader-text {
+  font-family: Archivo, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+/* ============ HEADER ============ */
+.cc-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px var(--pad);
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+.cc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--dark);
+}
+.cc-brand-arrow {
+  flex: none;
+  color: var(--subtle);
+  transition: transform .4s var(--ease), color .4s var(--ease);
+}
+.cc-brand:hover .cc-brand-arrow {
+  transform: translateX(-4px);
+  color: var(--orange-dark);
+}
+.cc-brand-mark { display: block; color: var(--dark); }
+.cc-brand-wordmark {
+  font-family: Archivo, sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: .13em;
+  color: var(--dark);
+  white-space: nowrap;
+}
+.cc-header-tag {
+  font-family: Archivo, sans-serif;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+/* ============ INTRO ============ */
+.cc-intro {
+  padding: clamp(70px, 11vw, 150px) 0 clamp(50px, 7vw, 90px);
+}
+.cc-intro-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+.cc-title {
+  font-family: Anton, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(38px, 7.5vw, 92px);
+  line-height: .95;
+  letter-spacing: .005em;
+  margin: 18px 0 0;
+  color: var(--dark);
+}
+.cc-lede {
+  max-width: 54ch;
+  margin: 26px 0 0;
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.6;
+  color: var(--body-text);
+  text-wrap: pretty;
+}
+.cc-scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 44px;
+  font-family: Archivo, sans-serif;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.cc-scroll-line {
+  display: block;
+  width: 74px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--orange), transparent);
+  animation: ccPull 2.4s var(--ease) infinite;
+}
+@keyframes ccPull {
+  0%, 100% { transform: translateX(0); opacity: .5; }
+  50%      { transform: translateX(12px); opacity: 1; }
+}
+
+/* ============ BUILD (sticky canvas + scrolling steps) ============ */
+.cc-build {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 0 clamp(24px, 4vw, 64px);
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+.cc-canvas-wrap {
+  position: sticky;
+  top: 84px;
+  height: min(76vh, 640px);
+  align-self: start;
+  border-radius: var(--r-shell);
+  overflow: hidden;
+  background: linear-gradient(180deg, #e9e6e0 0%, #d9d5cd 100%);
+  box-shadow: inset 0 0 0 1px rgba(22,21,20,.06),
+              0 30px 70px -40px rgba(22,21,20,.5);
+}
+#cc-canvas { display: block; width: 100%; height: 100%; }
+
+.cc-stage-readout {
+  position: absolute;
+  left: 22px;
+  bottom: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(22,21,20,.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.cc-stage-index {
+  font-family: Archivo, sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--orange);
+}
+.cc-stage-name {
+  font-family: Archivo, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .05em;
+  color: #fff;
+}
+.cc-noscript {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  text-align: center;
+  color: var(--body-text);
+}
+
+.cc-steps { padding: 6vh 0 12vh; }
+.cc-step {
+  min-height: 74vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: .28;
+  transition: opacity .6s var(--ease);
+}
+.cc-step.is-active { opacity: 1; }
+.cc-step-num {
+  font-family: Archivo, sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .2em;
+  font-variant-numeric: tabular-nums;
+  color: var(--orange);
+}
+.cc-step h2 {
+  font-family: Archivo, sans-serif;
+  font-weight: 800;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.1;
+  margin: 12px 0 0;
+  color: var(--dark);
+}
+.cc-step p {
+  margin: 14px 0 0;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 42ch;
+  text-wrap: pretty;
+}
+
+/* ============ SCOPE ============ */
+.cc-scope { padding: var(--section-y) 0; background: #fff; }
+.cc-scope-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+.cc-scope-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin-top: 42px;
+  background: var(--border);
+  box-shadow: 0 0 0 1px var(--border);
+}
+.cc-scope-grid li { background: #fff; padding: 32px 30px 36px; }
+.cc-scope-grid h3 {
+  font-family: Archivo, sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--dark);
+}
+.cc-scope-grid p {
+  margin: 9px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ============ CTA + FOOTER ============ */
+/* Contained panel, not a full-bleed band — the off-white gap beneath it is
+   what stops the CTA and the dark footer reading as one slab. */
+.cc-cta {
+  padding: var(--section-y) var(--pad);
+  background: var(--off-white);
+}
+.cc-cta-panel {
+  position: relative;
+  isolation: isolate;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: clamp(58px, 8vw, 100px) 0;
+  border-radius: var(--r-shell);
+  overflow: hidden;
+  background: var(--dark);
+  text-align: center;
+  box-shadow: 0 40px 80px -50px rgba(22,21,20,.85);
+}
+.cc-cta-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .2;
+  filter: grayscale(.35);
+}
+.cc-cta-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(22,21,20,.9), rgba(22,21,20,.72));
+}
+.cc-cta-inner {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+.cc-cta-title {
+  font-family: Anton, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(28px, 4.4vw, 52px);
+  line-height: 1;
+  color: #fff;
+}
+.cc-cta p {
+  margin: 18px 0 30px;
+  color: #b9b6b1;
+  font-size: 16px;
+  line-height: 1.6;
+}
+/* Footer is the shared .site-footer from styles.css — nothing to add here */
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 700px) {
+  /* Brand keeps its place; the section tag is the expendable one */
+  .cc-header-tag { display: none; }
+  .cc-brand-wordmark { font-size: 14px; letter-spacing: .1em; }
+}
+
+@media (max-width: 900px) {
+  .cc-build { grid-template-columns: 1fr; }
+  .cc-canvas-wrap { height: 54vh; top: 74px; }
+  .cc-steps { padding: 4vh 0 8vh; }
+  .cc-step { min-height: 62vh; }
+  .cc-scope-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-shell { opacity: 1 !important; }
+  .cc-scroll-line { animation: none; }
+  .cc-step { opacity: 1; }
+}
