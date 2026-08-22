@@ -1,0 +1,42 @@
+/* ================================================
+   MAKEN BROTHERS - plant-material-labour.css
+   Page-specific: the hazard-barrier loader.
+   Shared page chrome lives in service-page.css
+   ================================================ */
+
+.pml-loader { background: #1b1815; }
+
+.pml-barrier {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Chevron bars sit at an angle and are over-wide, so they can slide
+   clear of the viewport without exposing an edge. */
+.pml-bar {
+  position: absolute;
+  left: -30%;
+  width: 160%;
+  will-change: transform;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--orange-dark) 0 34px,
+    #1f1c19 34px 68px
+  );
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07),
+              inset 0 -2px 0 rgba(0,0,0,.35);
+}
+/* Alternate bars are dimmed so the stack reads as separate barriers */
+.pml-bar.is-dim {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #6d4520 0 34px,
+    #1a1714 34px 68px
+  );
+}
+
+/* Deeper, cooler backdrop: this scene is a concrete yard under open sky */
+.pml-canvas-wrap {
+  background: linear-gradient(180deg, #e8e5df 0%, #c9c4bb 100%);
+}

@@ -149,6 +149,19 @@
 
 </div>
 
+<script>
+  /* Outer failsafe. The module below imports Three.js from a CDN; if that
+     request is blocked or fails, the module never executes and any failsafe
+     inside it never registers, leaving the loader up forever. This runs
+     regardless, and only fires if the module has not booted. */
+  setTimeout(function () {
+    if (window.__mbBooted) return;
+    var l = document.getElementById('cc-loader');
+    var s = document.getElementById('cc-shell');
+    if (l) l.classList.add('is-gone');
+    if (s) s.classList.add('is-revealed');
+  }, 5000);
+</script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script type="importmap">

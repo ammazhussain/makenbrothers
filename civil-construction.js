@@ -5,6 +5,9 @@
 
 import * as THREE from 'three';
 
+// Tells the inline failsafe in the HTML that the module did load.
+window.__mbBooted = true;
+
 const gsap = window.gsap;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
