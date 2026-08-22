@@ -50,6 +50,95 @@ if (reduce) {
   revealNodes.forEach(n => n.classList.add('is-visible'));
 }
 
+/* ============ EMAIL ============ */
+/* A mailto: link silently does nothing when no mail client is registered, which
+   is common on desktop Chrome. Copy the address on click and confirm it, so the
+   link always leaves the visitor with something usable. */
+function wireEmailCopy() {
+  const links = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
+  if (!links.length || !navigator.clipboard) return;
+
+  let toast;
+  let hideTimer;
+
+  const notify = (msg) => {
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'copy-toast';
+      toast.setAttribute('role', 'status');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('is-shown');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => toast.classList.remove('is-shown'), 2600);
+  };
+
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      const address = link.getAttribute('href').replace(/^mailto:/, '');
+      navigator.clipboard.writeText(address)
+        .then(() => notify('Copied ' + address))
+        // Clipboard can be refused (unfocused document, permission denied).
+        // Still surface the address so it is never a dead click.
+        .catch(() => notify(address));
+    });
+  });
+}
+
+wireEmailCopy();
+
+/* ============ STAT COUNTERS ============ */
+function runCounters() {
+  const nodes = Array.from(document.querySelectorAll('[data-count-to]'));
+  if (!nodes.length) return;
+
+  const settle = el => {
+    el.textContent = el.dataset.countTo + (el.dataset.countSuffix || '');
+  };
+
+  if (reduce || !('IntersectionObserver' in window)) {
+    nodes.forEach(settle);
+    return;
+  }
+
+  const count = el => {
+    const target = Number(el.dataset.countTo);
+    const suffix = el.dataset.countSuffix || '';
+    const duration = 1100;
+    const start = performance.now();
+
+    const step = now => {
+      const t = Math.min((now - start) / duration, 1);
+      // ease-out cubic, so it decelerates into the final number
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(target * eased) + (t === 1 ? suffix : '');
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      count(e.target);
+      cio.unobserve(e.target);
+    });
+  }, { threshold: 0.6 });
+
+  nodes.forEach(n => {
+    n.textContent = '0';
+    cio.observe(n);
+  });
+
+  // Safety net, matching the scroll-reveal fallback
+  setTimeout(() => nodes.forEach(n => {
+    if (n.textContent === '0') settle(n);
+  }), 3000);
+}
+
+runCounters();
+
 /* ============ BRICK WALL ============ */
 function buildWall() {
   const tiles = Array.from(document.querySelectorAll('.wall-tile'));
