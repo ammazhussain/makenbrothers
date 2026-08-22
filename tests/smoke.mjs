@@ -1,11 +1,16 @@
 /**
  * Smoke test for the Maken Brothers site.
  *
- *   npm test                          # test the live site
- *   node tests/smoke.mjs http://localhost:3000
+ *   cd tests && npm install           # once
+ *   node tests/smoke.mjs              # test the live site
+ *   node tests/smoke.mjs http://localhost:8765
  *   node tests/smoke.mjs --shots out  # also write full-page screenshots to ./out
  *
  * Exits non-zero if anything fails. No test framework on purpose.
+ *
+ * package.json lives in tests/ rather than the repo root on purpose: a root
+ * package.json makes the deploy host treat this as a Node project and run a
+ * build, which fails and silently stops the site from updating.
  */
 import { chromium } from 'playwright';
 import { readFileSync, mkdirSync } from 'node:fs';

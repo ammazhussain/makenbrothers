@@ -12,6 +12,9 @@ DEPLOY.md
 .netlify/
 
 # Test tooling
+# NOTE: package.json must NOT live in the repo root - the deploy host treats a
+# root package.json as "this is a Node project, run a build" and the build fails.
+# Test tooling lives in tests/ for that reason.
 node_modules/
 test-shots/
 
