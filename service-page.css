@@ -375,9 +375,16 @@
      supplies the scroll distance, and the caption cross-fades per stage. */
   /* One instrument in two plates: the scene above, its caption below,
      split by a hairline seam so they read as a single machined object. */
-  .cc-build { grid-template-columns: 1fr; align-content: start; min-height: 460svh; }
+  /* Scene takes whatever height the caption leaves, so the pair always
+     fills the screen exactly. --cap-h is measured in civil-construction.js. */
+  .cc-build {
+    --stage-h: max(40svh, calc(100svh - 74px - 6px - var(--cap-h, 210px) - 14px));
+    grid-template-columns: 1fr;
+    align-content: start;
+    min-height: 460svh;
+  }
   .cc-canvas-wrap {
-    height: 50svh;
+    height: var(--stage-h);
     top: 74px;
     border-radius: var(--r-shell) var(--r-shell) 10px 10px;
     box-shadow: inset 0 0 0 1px rgba(22,21,20,.06);
@@ -386,7 +393,7 @@
 
   .cc-steps {
     position: sticky;
-    top: calc(74px + 50svh + 6px);
+    top: calc(74px + var(--stage-h) + 6px);
     align-self: start;
     display: grid;
     grid-template-rows: auto 1fr;

@@ -650,7 +650,8 @@ function initScene(state) {
     camera.updateProjectionMatrix();
   }
   resize();
-  window.addEventListener('resize', resize);
+  // The box itself can change size (mobile caption height), not just the window
+  new ResizeObserver(resize).observe(wrap);
 
   /* ---------- apply state → scene ---------- */
   const lastZ = MACHINES.map(() => DRIVE_FROM);
@@ -825,6 +826,11 @@ function choreograph() {
   const idxEl = document.getElementById('cc-stage-index');
   const nameEl = document.getElementById('cc-stage-name');
   const steps = Array.from(document.querySelectorAll('.cc-step'));
+  // Mobile sizes the scene from the caption's real height (see service-page.css)
+  const cap = document.querySelector('.cc-steps');
+  new ResizeObserver(() => {
+    document.getElementById('cc-build').style.setProperty('--cap-h', cap.offsetHeight + 'px');
+  }).observe(cap);
   const rail = Array.from(document.querySelectorAll('.cc-rail i'));
   const fillRail = () => [state.s0, state.s1, state.s2, state.s3, state.s4]
     .forEach((v, k) => { if (rail[k]) rail[k].style.setProperty('--fill', v); });
