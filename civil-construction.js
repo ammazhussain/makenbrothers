@@ -879,8 +879,10 @@ function choreograph() {
     .to(state, { s1: 1, duration: 1 })
     .to(state, { s2: 1, duration: 1 })
     .to(state, { s3: 1, duration: 1 })
-    .to(state, { s4: 1, duration: 1 })
-    .to(state, { dusk: 1, duration: 0.7 });
+    // Dusk shares the last step's slot: five equal slots keep each stage
+    // lined up with its step text in the scrolling column.
+    .to(state, { s4: 1, duration: 0.6 })
+    .to(state, { dusk: 1, duration: 0.45 }, '-=0.05');
   tl.to(state, { cam: 1, duration: tl.duration() }, 0);
 }
 
