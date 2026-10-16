@@ -370,10 +370,28 @@
 }
 
 @media (max-width: 900px) {
-  .cc-build { grid-template-columns: 1fr; }
-  .cc-canvas-wrap { height: 54svh; top: 74px; }
-  .cc-steps { padding: 4svh 0 8svh; }
-  .cc-step { min-height: 62svh; }
+  /* Animation and its caption are both pinned; the section's height alone
+     supplies the scroll distance, and the caption cross-fades per stage. */
+  .cc-build { grid-template-columns: 1fr; align-content: start; min-height: 460svh; }
+  .cc-canvas-wrap { height: 50svh; top: 74px; }
+  .cc-steps {
+    position: sticky;
+    top: calc(74px + 50svh + 14px);
+    align-self: start;
+    display: grid;
+    padding: 0 4px;
+  }
+  .cc-step {
+    grid-area: 1 / 1;
+    min-height: 0;
+    justify-content: flex-start;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .45s var(--ease), transform .45s var(--ease);
+  }
+  .cc-step.is-active { opacity: 1; transform: none; }
+  .cc-step h2 { margin-top: 6px; font-size: 22px; }
+  .cc-step p { margin-top: 8px; font-size: 14.5px; line-height: 1.55; }
   .cc-scope-grid { grid-template-columns: 1fr; }
 }
 
@@ -381,4 +399,11 @@
   .cc-shell { opacity: 1 !important; }
   .cc-scroll-line { animation: none; }
   .cc-step { opacity: 1; }
+}
+
+/* Reduced motion shows the finished road, so list every step normally */
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .cc-build { min-height: 0; }
+  .cc-steps { position: static; display: block; padding: 24px 0 48px; }
+  .cc-step { transform: none; margin-bottom: 28px; }
 }
