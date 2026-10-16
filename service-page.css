@@ -241,6 +241,7 @@
 }
 
 .cc-steps { padding: 6svh 0 12svh; }
+.cc-rail { display: none; }
 .cc-step {
   min-height: 74svh;
   display: flex;
@@ -372,26 +373,81 @@
 @media (max-width: 900px) {
   /* Animation and its caption are both pinned; the section's height alone
      supplies the scroll distance, and the caption cross-fades per stage. */
+  /* One instrument in two plates: the scene above, its caption below,
+     split by a hairline seam so they read as a single machined object. */
   .cc-build { grid-template-columns: 1fr; align-content: start; min-height: 460svh; }
-  .cc-canvas-wrap { height: 50svh; top: 74px; }
+  .cc-canvas-wrap {
+    height: 50svh;
+    top: 74px;
+    border-radius: var(--r-shell) var(--r-shell) 10px 10px;
+    box-shadow: inset 0 0 0 1px rgba(22,21,20,.06);
+  }
+  .cc-stage-readout { display: none; }
+
   .cc-steps {
     position: sticky;
-    top: calc(74px + 50svh + 14px);
+    top: calc(74px + 50svh + 6px);
     align-self: start;
     display: grid;
-    padding: 0 4px;
+    grid-template-rows: auto 1fr;
+    padding: 18px 20px 22px;
+    border-radius: 10px 10px var(--r-shell) var(--r-shell);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px rgba(22,21,20,.06),
+                0 30px 60px -40px rgba(22,21,20,.35);
   }
+
+  /* Build progress: one segment per layer, filled by the scrub */
+  .cc-rail {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 16px;
+  }
+  .cc-rail i {
+    height: 3px;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .cc-rail i::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: var(--orange);
+    transform: scaleX(var(--fill, 0));
+    transform-origin: left;
+  }
+
   .cc-step {
-    grid-area: 1 / 1;
+    grid-area: 2 / 1;
     min-height: 0;
-    justify-content: flex-start;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity .45s var(--ease), transform .45s var(--ease);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+    align-content: start;
+    opacity: 1;
+    pointer-events: none;
   }
-  .cc-step.is-active { opacity: 1; transform: none; }
-  .cc-step h2 { margin-top: 6px; font-size: 22px; }
-  .cc-step p { margin-top: 8px; font-size: 14.5px; line-height: 1.55; }
+  .cc-step.is-active { pointer-events: auto; }
+  .cc-step-num {
+    grid-row: 1 / span 2;
+    font-size: 40px;
+    line-height: .9;
+    letter-spacing: -.02em;
+  }
+  .cc-step h2 { margin: 0; font-size: 21px; }
+  .cc-step p { margin-top: 6px; font-size: 14.5px; line-height: 1.55; }
+
+  /* Weighted, staggered hand-off between stages: transform + opacity only */
+  .cc-step > * {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .5s var(--ease), transform .7s var(--ease);
+  }
+  .cc-step.is-active > * { opacity: 1; transform: none; }
+  .cc-step.is-active h2 { transition-delay: .05s; }
+  .cc-step.is-active p { transition-delay: .1s; }
   .cc-scope-grid { grid-template-columns: 1fr; }
 }
 

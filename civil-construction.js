@@ -825,6 +825,9 @@ function choreograph() {
   const idxEl = document.getElementById('cc-stage-index');
   const nameEl = document.getElementById('cc-stage-name');
   const steps = Array.from(document.querySelectorAll('.cc-step'));
+  const rail = Array.from(document.querySelectorAll('.cc-rail i'));
+  const fillRail = () => [state.s0, state.s1, state.s2, state.s3, state.s4]
+    .forEach((v, k) => { if (rail[k]) rail[k].style.setProperty('--fill', v); });
 
   let current = -1;
   const setStage = (i, open) => {
@@ -842,6 +845,7 @@ function choreograph() {
     Object.assign(state, { s0: 1, s1: 1, s2: 1, s3: 1, s4: 1, cam: 0.9 });
     setStage(STAGES.length - 1);
     steps.forEach(s => s.classList.add('is-active'));
+    fillRail();
     return;
   }
 
@@ -854,11 +858,13 @@ function choreograph() {
       trigger: '.cc-build',
       start: 'top top',
       end: 'bottom bottom',
-      scrub: 0.8,
-      onUpdate: () => {
-        const i = [state.s0, state.s1, state.s2, state.s3, state.s4].findIndex(v => v < 1);
-        setStage(i < 0 ? STAGES.length - 1 : i, state.dusk > 0.5);
-      }
+      scrub: 0.8
+    },
+    // On the timeline, not the trigger, so it tracks the smoothed scrub
+    onUpdate: () => {
+      const i = [state.s0, state.s1, state.s2, state.s3, state.s4].findIndex(v => v < 1);
+      setStage(i < 0 ? STAGES.length - 1 : i, state.dusk > 0.5);
+      fillRail();
     },
     defaults: { ease: 'none' }
   });
