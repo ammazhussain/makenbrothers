@@ -383,9 +383,13 @@
     align-content: start;
     min-height: 460svh;
   }
+  /* Margin trick: the scene's sticky travel ends one caption-height early, and
+     the caption pulls back up by the same amount, so at the end of the section
+     the pair releases together instead of the caption sliding over the scene. */
   .cc-canvas-wrap {
     height: var(--stage-h);
     top: 74px;
+    margin-bottom: calc(var(--cap-h, 210px) + 6px);
     border-radius: var(--r-shell) var(--r-shell) 10px 10px;
     box-shadow: inset 0 0 0 1px rgba(22,21,20,.06);
   }
@@ -394,6 +398,7 @@
   .cc-steps {
     position: sticky;
     top: calc(74px + var(--stage-h) + 6px);
+    margin-top: calc(-1 * var(--cap-h, 210px));
     align-self: start;
     display: grid;
     grid-template-rows: auto 1fr;
