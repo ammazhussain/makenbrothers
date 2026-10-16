@@ -193,7 +193,7 @@
 .cc-canvas-wrap {
   position: sticky;
   top: 84px;
-  height: min(76vh, 640px);
+  height: min(76svh, 640px);
   align-self: start;
   border-radius: var(--r-shell);
   overflow: hidden;
@@ -240,9 +240,9 @@
   color: var(--body-text);
 }
 
-.cc-steps { padding: 6vh 0 12vh; }
+.cc-steps { padding: 6svh 0 12svh; }
 .cc-step {
-  min-height: 74vh;
+  min-height: 74svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -371,9 +371,9 @@
 
 @media (max-width: 900px) {
   .cc-build { grid-template-columns: 1fr; }
-  .cc-canvas-wrap { height: 54vh; top: 74px; }
-  .cc-steps { padding: 4vh 0 8vh; }
-  .cc-step { min-height: 62vh; }
+  .cc-canvas-wrap { height: 54svh; top: 74px; }
+  .cc-steps { padding: 4svh 0 8svh; }
+  .cc-step { min-height: 62svh; }
   .cc-scope-grid { grid-template-columns: 1fr; }
 }
 

@@ -62,6 +62,9 @@ for (const [label, width] of Object.entries(VIEWPORTS)) {
         window.scrollTo(0, y);
         await new Promise(r => requestAnimationFrame(() => setTimeout(r, 120)));
       }
+      // The stepped walk can stop short of the last viewport; always finish at the bottom.
+      window.scrollTo(0, document.body.scrollHeight);
+      await new Promise(r => setTimeout(r, 300));
       window.scrollTo(0, 0);
       await new Promise(r => setTimeout(r, 400));
     });

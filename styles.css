@@ -317,7 +317,7 @@ address { font-style: normal; }
 .hero-section {
   position: relative;
   background: var(--dark);
-  min-height: 88vh;
+  min-height: 88svh;
 }
 .hero-bg-img {
   position: absolute;
@@ -342,7 +342,7 @@ address { font-style: normal; }
   max-width: var(--max-w);
   margin: 0 auto;
   padding: 48px var(--pad) 115px;
-  min-height: 88vh;
+  min-height: 88svh;
   display: flex;
   flex-direction: column;
   justify-content: center;

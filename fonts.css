@@ -1,0 +1,4 @@
+/* Self-hosted Latin subsets (variable weights) of the former Google Fonts. */
+@font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/anton.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:500 900;font-display:swap;src:url(fonts/archivo.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/inter.woff2) format('woff2')}
