@@ -145,8 +145,11 @@ function stones(base, n, rMin, rMax, shades, extra) {
       const shade = shades[(Math.random() * shades.length) | 0];
       for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) {
         if (x + dx < -rMax || x + dx > s + rMax || y + dy < -rMax || y + dy > s + rMax) continue;
-        g.fillStyle = 'rgba(0,0,0,.28)';
-        g.beginPath(); g.ellipse(x + dx + r * 0.3, y + dy + r * 0.35, r, r * sq, rot, 0, 7); g.fill();
+        // Shadow only where it reads; on sub-pixel grit it just costs paint time
+        if (r > 1.3) {
+          g.fillStyle = 'rgba(0,0,0,.28)';
+          g.beginPath(); g.ellipse(x + dx + r * 0.3, y + dy + r * 0.35, r, r * sq, rot, 0, 7); g.fill();
+        }
         g.fillStyle = shade;
         g.beginPath(); g.ellipse(x + dx, y + dy, r, r * sq, rot, 0, 7); g.fill();
       }
@@ -197,7 +200,7 @@ function worldMat(map, uvScale, rough = 0.95) {
       vec2 wuv = an.y > .5 ? vWP.xz : (an.x > .5 ? vWP.zy : vWP.xy);
       diffuseColor *= texture2D(map, wuv * uvScale);`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-      totalEmissiveRadiance += vec3(1., .3, .05) * heat
+      totalEmissiveRadiance += vec3(1., .22, .03) * heat
         * exp(-max(vWP.z - heatFront, 0.) / 2.5) * step(heatFront, vWP.z) * step(.5, vWN.y);`);
   };
   return m;
@@ -593,6 +596,7 @@ function initScene(state) {
   for (let i = 0; i < 260; i++) {
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.puff, transparent: true, depthWrite: false }));
     sp.visible = false;
+    sp.matrixAutoUpdate = false; // only live particles get their matrix rebuilt
     sp.userData = { life: 0, max: 1, v: new V3(), g: 0, s0: 1, s1: 1, a: 1 };
     scene.add(sp);
     parts.push(sp);
@@ -623,6 +627,7 @@ function initScene(state) {
       sp.position.addScaledVector(d.v, dt);
       sp.scale.setScalar(d.s0 + (d.s1 - d.s0) * t);
       sp.material.opacity = d.a * Math.min(1, t * 6) * (1 - t);
+      sp.updateMatrix();
     }
   }
   const tmp = new V3();
@@ -683,7 +688,7 @@ function initScene(state) {
     // Fresh asphalt glows hot just behind the screed, then cools off
     const au = L.asphalt.userData.u;
     au.heatFront.value = fronts[3].front;
-    au.heat.value = state.s3 > 0 ? 0.6 * (1 - clamp01(state.s4 * 4)) : 0;
+    au.heat.value = state.s3 > 0 ? 0.16 * (1 - clamp01(state.s4 * 4)) : 0;
 
     // Cones arrive with the grader and are cleared once the road is marked
     cones.forEach(c => {
@@ -709,6 +714,7 @@ function initScene(state) {
       const { z } = fronts[i];
       g.visible = lp > 0.0005 && lp < 0.9995;
       g.position.set(0, DECK[i], z);
+      if (g.visible) g.updateMatrix();
       g.userData.wheels.forEach(w => { w.m.rotation.x = z / w.r; });
       const dz = Math.abs(z - lastZ[i]);
       lastZ[i] = z;
@@ -741,6 +747,7 @@ function initScene(state) {
     auger.rotation.x = t * 6;
     tandem.visible = paver.visible;
     tandem.position.set(1.6, DECK[3] + 0.25, Math.max(fronts[3].z + 7.5, -LENGTH + 4));
+    if (tandem.visible) tandem.updateMatrix();
     tandem.userData.wheels.forEach(w => { w.m.rotation.x = tandem.position.z / w.r; });
     if (tandem.visible && Math.random() < dt * 4) {
       tandem.updateMatrixWorld();
@@ -769,6 +776,7 @@ function initScene(state) {
       const u = ((t * 0.045 + CAR_PHASE[i]) % 1);
       const z = c.userData.dir < 0 ? lerp(1, -LENGTH, u) : lerp(-LENGTH, 1, u);
       c.position.set(CAR_LANE[i], 1.17, z);
+      c.updateMatrix();
       c.userData.wheels.forEach(w => { w.m.rotation.x = z / w.r * -c.userData.dir; });
       c.userData.beam.material.opacity = d * 0.35;
     });
@@ -802,12 +810,39 @@ function initScene(state) {
     renderer.render(scene, camera);
     requestAnimationFrame(tick);
   }
-  tick();
+
+  /* Freeze the local matrix of every part that never moves relative to its
+     parent (machine panels, cabs, lamp heads...). Three then skips rebuilding
+     them each frame; a moving parent still carries them along. */
+  const moving = new Set([auger]);
+  [...MACHINES, tandem, ...cars].forEach(g => g.userData.wheels.forEach(w => moving.add(w.m)));
+  // Machines and cars only rebuild their matrices while on screen (see apply)
+  [...MACHINES, tandem, ...cars].forEach(g => { g.matrixAutoUpdate = false; });
+  scene.traverse(o => {
+    if (o.parent && o.parent !== scene && !moving.has(o)) {
+      o.updateMatrix();
+      o.matrixAutoUpdate = false;
+    }
+  });
+
+  /* Compile every shader and upload every texture behind the loader, with all
+     machines shown, so nothing stalls the first time it appears on scroll.
+     compileAsync uses parallel compilation where the GPU driver allows it. */
+  let ready = false;
+  const shown = [];
+  scene.traverse(o => { if (!o.visible) { o.visible = true; shown.push(o); } });
+  const warm = renderer.compileAsync ? renderer.compileAsync(scene, camera) : Promise.resolve();
+  warm.catch(() => {}).then(() => {
+    renderer.render(scene, camera); // shadow-pass variants and texture uploads
+    shown.forEach(o => { o.visible = false; });
+    ready = true;
+    tick();
+  });
 
   /* --- pause when offscreen, to stay kind to laptops --- */
   const vis = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting && !running) { running = true; clock.getDelta(); tick(); }
+      if (e.isIntersecting && !running) { running = true; if (ready) { clock.getDelta(); tick(); } }
       else if (!e.isIntersecting) { running = false; }
     });
   }, { threshold: 0 });
